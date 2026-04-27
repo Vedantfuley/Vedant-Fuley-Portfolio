@@ -601,9 +601,9 @@
 /* ── SOCIALS ── */
 .socials-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1rem;
-  max-width: 900px;
+  max-width: 960px;
   margin: 0 auto;
 }
 
@@ -658,11 +658,12 @@
 }
 
 .social-card p {
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   color: var(--text-muted);
   font-family: 'JetBrains Mono', monospace;
   word-break: break-all;
   overflow-wrap: break-word;
+  line-height: 1.5;
 }
 
 /* ── CONTACT SECTION ── */
