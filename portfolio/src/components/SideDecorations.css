@@ -1,0 +1,70 @@
+/* Side panels — only visible on wide screens */
+.side-panel {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: calc((100vw - 1100px) / 2);
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.side-left  { left: 0; }
+.side-right { right: 0; }
+
+/* Hide on screens where there's no side space */
+@media (max-width: 1200px) {
+  .side-panel { display: none; }
+}
+
+/* Constellation canvas fills the panel */
+.constellation-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Coordinate readout */
+.side-coords {
+  position: absolute;
+  bottom: 6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  color: rgba(99,179,237,0.35);
+  letter-spacing: 1px;
+  line-height: 1.4;
+}
+
+.side-coords-left  { left: 12px; text-align: left; }
+.side-coords-right { right: 12px; text-align: right; }
+
+/* Vertical label */
+.side-label-vert {
+  position: absolute;
+  top: 50%;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: rgba(99,179,237,0.15);
+  white-space: nowrap;
+}
+
+.side-label-left {
+  left: 8px;
+  transform: translateY(-50%) rotate(-90deg);
+  transform-origin: left center;
+}
+
+.side-label-right {
+  right: 8px;
+  transform: translateY(-50%) rotate(90deg);
+  transform-origin: right center;
+}
