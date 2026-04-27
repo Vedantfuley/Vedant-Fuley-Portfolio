@@ -661,6 +661,8 @@
   font-size: 0.82rem;
   color: var(--text-muted);
   font-family: 'JetBrains Mono', monospace;
+  word-break: break-all;
+  overflow-wrap: break-word;
 }
 
 /* ── CONTACT SECTION ── */

@@ -13,6 +13,7 @@ const ContactDialog = ({ isOpen, onClose, profile }) => {
   const [loading, setLoading] = useState(false);
   const [sent, setSent]       = useState(false);
   const [error, setError]     = useState('');
+  const dragStartedInside     = useRef(false);  // moved above early return
 
   useEffect(() => {
     const onKey = (e) => { if (e.key === 'Escape') onClose(); };
@@ -57,9 +58,6 @@ const ContactDialog = ({ isOpen, onClose, profile }) => {
   };
 
   const handleClose = () => { onClose(); setTimeout(() => setSent(false), 300); };
-
-  // Prevent closing when user drags text selection outside the dialog
-  const dragStartedInside = useRef(false);
 
   const handleOverlayMouseDown = (e) => {
     dragStartedInside.current = e.target !== e.currentTarget;
