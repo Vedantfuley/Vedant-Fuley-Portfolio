@@ -22,7 +22,6 @@ const usePortfolioData = () => {
     socials:    fallbackSocials,
     education:  fallbackEducation,
     loading:    false,
-    source:     'fallback',
   });
 
   useEffect(() => {
@@ -53,7 +52,6 @@ const usePortfolioData = () => {
           socials:    socials.data    ?? fallbackSocials,
           education:  education.data  ?? fallbackEducation,
           loading:    false,
-          source:     profile.data ? 'supabase' : 'fallback',
         });
       } catch (err) {
         console.error('[Supabase] fetch failed:', err);
