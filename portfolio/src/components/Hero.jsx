@@ -40,8 +40,15 @@ const Hero = ({ onContactClick, profile }) => {
             <button className="btn btn-outline" onClick={onContactClick}>
               Get in Touch
             </button>
-            {profile?.resume_url && (
-              <a href={profile.resume_url} download className="btn btn-ghost">
+            {profile?.resume_url && profile.resume_url !== '/Vedant_Fuley_Resume.pdf' && (
+              <a
+                href={profile.resume_url}
+                download
+                className="btn btn-ghost"
+                target="_blank"
+                rel="noreferrer"
+                onClick={e => e.stopPropagation()}
+              >
                 <FiDownload /> Resume
               </a>
             )}
