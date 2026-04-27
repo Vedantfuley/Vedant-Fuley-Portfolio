@@ -8,7 +8,6 @@ const About = ({ profile, skills, education }) => (
 
       <div className="about-wrap">
         <div className="about-avatar-wrap reveal-left">
-          {/* Swap emoji for: <img src="/your-photo.jpg" alt={profile?.name} className="about-avatar-box" style={{objectFit:'cover'}} /> */}
           <div className="about-avatar-box">👨‍💻</div>
           <div className="about-avatar-glow" />
           <div className="about-avatar-glow-2" />

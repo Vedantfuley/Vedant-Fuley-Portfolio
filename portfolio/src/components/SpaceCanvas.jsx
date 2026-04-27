@@ -127,6 +127,22 @@ const SpaceCanvas = () => {
       flameT: 0,
     };
 
+    // ── Comets ────────────────────────────────────────────────
+    const comets = [];
+    let cometTimer = 0;
+    const spawnComet = () => {
+      const fromLeft = Math.random() < 0.5;
+      comets.push({
+        x: fromLeft ? -80 : W + 80,
+        y: H * 0.05 + Math.random() * H * 0.4,
+        vx: fromLeft ? 3.5 + Math.random() * 2 : -(3.5 + Math.random() * 2),
+        vy: 1.2 + Math.random() * 1.5,
+        len: 180 + Math.random() * 120,
+        r: 2.5 + Math.random() * 1.5,
+        alpha: 1, life: 1,
+      });
+    };
+
     // ── Shooting stars ────────────────────────────────────────
     const shooters = [];
     let shootTimer = 0;
@@ -383,6 +399,30 @@ const SpaceCanvas = () => {
           rocket.x = rightCX + (Math.random() - 0.5) * gutter * 0.3;
         }
         drawRocket(rocket.x + sway + camX * 0.08, rocket.y, rocket.flameT);
+      }
+
+      // comets (rare, long tail, cross full screen)
+      cometTimer += 0.016;
+      if (cometTimer > 12 + Math.random() * 10) { spawnComet(); cometTimer = 0; }
+      for (let i = comets.length - 1; i >= 0; i--) {
+        const c = comets[i];
+        const tailX = c.x - c.vx * (c.len / Math.sqrt(c.vx * c.vx + c.vy * c.vy));
+        const tailY = c.y - c.vy * (c.len / Math.sqrt(c.vx * c.vx + c.vy * c.vy));
+        const cg = ctx.createLinearGradient(tailX, tailY, c.x, c.y);
+        cg.addColorStop(0, 'rgba(255,255,255,0)');
+        cg.addColorStop(0.6, `rgba(180,220,255,${c.alpha * 0.5})`);
+        cg.addColorStop(1, `rgba(255,255,255,${c.alpha})`);
+        ctx.beginPath(); ctx.moveTo(tailX, tailY); ctx.lineTo(c.x, c.y);
+        ctx.strokeStyle = cg; ctx.lineWidth = c.r; ctx.stroke();
+        // head glow
+        const hg = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.r * 4);
+        hg.addColorStop(0, `rgba(255,255,255,${c.alpha})`);
+        hg.addColorStop(1, 'transparent');
+        ctx.beginPath(); ctx.arc(c.x, c.y, c.r * 4, 0, Math.PI * 2);
+        ctx.fillStyle = hg; ctx.fill();
+        c.x += c.vx; c.y += c.vy;
+        c.life -= 0.004; c.alpha = c.life;
+        if (c.life <= 0 || c.x < -200 || c.x > W + 200) comets.splice(i, 1);
       }
 
       // shooting stars

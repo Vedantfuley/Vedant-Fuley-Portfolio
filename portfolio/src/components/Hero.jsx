@@ -1,5 +1,5 @@
 import useTypewriter from '../hooks/useTypewriter';
-import { FiDownload, FiArrowRight } from 'react-icons/fi';
+import { FiArrowRight } from 'react-icons/fi';
 
 const roles = ['Software Developer', 'Flutter Engineer', 'ML Enthusiast', 'Python Developer', 'AI Explorer'];
 
@@ -52,11 +52,6 @@ const Hero = ({ onContactClick, profile }) => {
               </a>
             )}
           </div>
-        </div>
-
-        <div className="hero-scroll">
-          <div className="hero-scroll-line" />
-          <span>scroll</span>
         </div>
       </div>
     </section>

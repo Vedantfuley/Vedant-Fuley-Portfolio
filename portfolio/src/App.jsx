@@ -12,12 +12,14 @@ import ContactDialog from './components/ContactDialog';
 import Footer from './components/Footer';
 import SpaceCanvas from './components/SpaceCanvas';
 import SideDecorations from './components/SideDecorations';
+import Loader from './components/Loader';
 import useScrollReveal from './hooks/useScrollReveal';
 import useSparkle from './hooks/useSparkle';
 import usePortfolioData from './hooks/usePortfolioData';
 
 function App() {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const portfolioData = usePortfolioData();
   useScrollReveal();
   useSparkle();
@@ -26,9 +28,18 @@ function App() {
 
   return (
     <>
+      {/* Rocket launch loader */}
+      {!loaded && <Loader onDone={() => setLoaded(true)} />}
+
+      {/* Aurora at top */}
+      <div className="aurora" aria-hidden="true">
+        <div className="aurora-band" />
+        <div className="aurora-band" />
+      </div>
+
       {/* Space background canvas */}
       <SpaceCanvas />
-      {/* Side constellation decorations (desktop/tablet only) */}
+      {/* Side constellation decorations (desktop only) */}
       <SideDecorations />
 
       <Navbar onContactClick={openContact} profile={portfolioData.profile} />
