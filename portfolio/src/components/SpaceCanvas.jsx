@@ -25,7 +25,7 @@ const SpaceCanvas = () => {
     resize();
     window.addEventListener('resize', resize);
 
-    // ── Stars (3 depth layers) ────────────────────────────────
+    // ── Stars ────────────────────────────────────────────────
     const makeStar = (layer) => ({
       x: Math.random() * 3000 - 1000,
       y: Math.random() * 6000 - 1000,
@@ -44,8 +44,7 @@ const SpaceCanvas = () => {
       ...Array.from({ length: 40  }, () => makeStar(2)),
     ];
 
-    // ── Nebulae — centered in each gutter ────────────────────
-    // ny: normalized 0-1 of total page scroll height (approx)
+    // ── Nebulae ───────────────────────────────────────────────
     const nebulae = [
       { side: 'left',  ny: 0.05, r: 220, c1: 'rgba(99,179,237,0.055)',  c2: 'rgba(99,179,237,0)'  },
       { side: 'right', ny: 0.18, r: 260, c1: 'rgba(159,122,234,0.05)',  c2: 'rgba(159,122,234,0)' },
@@ -56,37 +55,87 @@ const SpaceCanvas = () => {
       { side: 'left',  ny: 0.92, r: 200, c1: 'rgba(99,179,237,0.05)',   c2: 'rgba(99,179,237,0)'  },
     ];
 
-    // ── Planets — fixed screen-Y positions, centered in gutter ─
-    // sy: fraction of viewport height where planet sits (0=top, 1=bottom)
-    // They float with a tiny sine wave — almost static
+    // ── Celestial bodies ──────────────────────────────────────
+    // Moon: grey, cratered look, left gutter upper area
+    // Mars: reddish-orange, right gutter mid area
+    // Saturn-like planet: purple, left gutter lower
+    // Small ice planet: cyan, right gutter lower
     const planets = [
-      { side: 'left',  sy: 0.22, r: 32, color: '#1a3a5c', ring: true,  ringColor: 'rgba(99,179,237,0.3)',   glowColor: 'rgba(99,179,237,0.18)',  bands: ['rgba(99,179,237,0.14)','rgba(99,179,237,0.07)'], floatAmp: 12, floatSpeed: 0.5,  floatOffset: 0 },
-      { side: 'right', sy: 0.48, r: 24, color: '#2d1b4e', ring: false, glowColor: 'rgba(159,122,234,0.22)', bands: ['rgba(159,122,234,0.16)','rgba(159,122,234,0.08)'],                                    floatAmp: 16, floatSpeed: 0.38, floatOffset: 1.2 },
-      { side: 'left',  sy: 0.72, r: 18, color: '#0d2b1a', ring: false, glowColor: 'rgba(104,211,145,0.2)',  bands: ['rgba(104,211,145,0.14)'],                                                             floatAmp: 10, floatSpeed: 0.6,  floatOffset: 2.4 },
-      { side: 'right', sy: 0.85, r: 12, color: '#1a2a3a', ring: false, glowColor: 'rgba(99,179,237,0.16)',  bands: [],                                                                                     floatAmp: 8,  floatSpeed: 0.7,  floatOffset: 0.8 },
-      { side: 'left',  sy: 0.55, r: 26, color: '#2a1a3e', ring: true,  ringColor: 'rgba(159,122,234,0.25)', glowColor: 'rgba(159,122,234,0.18)', bands: ['rgba(159,122,234,0.12)'],                        floatAmp: 14, floatSpeed: 0.42, floatOffset: 3.0 },
-      { side: 'right', sy: 0.30, r: 16, color: '#0d2020', ring: false, glowColor: 'rgba(104,211,145,0.18)', bands: ['rgba(104,211,145,0.12)'],                                                             floatAmp: 10, floatSpeed: 0.55, floatOffset: 1.8 },
+      {
+        id: 'moon',
+        side: 'left', sy: 0.20, r: 36,
+        color: '#8a9bb0', glowColor: 'rgba(180,200,220,0.15)',
+        bands: ['rgba(255,255,255,0.06)', 'rgba(0,0,0,0.08)'],
+        ring: false, craters: true,
+        floatAmp: 10, floatSpeed: 0.4, floatOffset: 0,
+      },
+      {
+        id: 'mars',
+        side: 'right', sy: 0.38, r: 28,
+        color: '#c1440e', glowColor: 'rgba(220,80,30,0.2)',
+        bands: ['rgba(180,60,20,0.3)', 'rgba(240,120,60,0.15)'],
+        ring: false, craters: false,
+        floatAmp: 14, floatSpeed: 0.35, floatOffset: 1.5,
+      },
+      {
+        id: 'saturn',
+        side: 'left', sy: 0.62, r: 26,
+        color: '#2d1b4e', ring: true,
+        ringColor: 'rgba(159,122,234,0.35)',
+        glowColor: 'rgba(159,122,234,0.2)',
+        bands: ['rgba(159,122,234,0.18)', 'rgba(159,122,234,0.08)'],
+        craters: false,
+        floatAmp: 12, floatSpeed: 0.45, floatOffset: 2.8,
+      },
+      {
+        id: 'ice',
+        side: 'right', sy: 0.75, r: 16,
+        color: '#0d2b3a', glowColor: 'rgba(99,179,237,0.18)',
+        bands: ['rgba(99,179,237,0.2)'],
+        ring: false, craters: false,
+        floatAmp: 8, floatSpeed: 0.6, floatOffset: 0.9,
+      },
+      {
+        id: 'green',
+        side: 'right', sy: 0.88, r: 14,
+        color: '#0d2b1a', glowColor: 'rgba(104,211,145,0.18)',
+        bands: ['rgba(104,211,145,0.2)'],
+        ring: false, craters: false,
+        floatAmp: 7, floatSpeed: 0.55, floatOffset: 4.0,
+      },
     ];
 
-    // ── Moons ─────────────────────────────────────────────────
-    const moons = [
-      { pi: 0, orbitR: 56, angle: 0,       speed: 0.007, r: 4, color: 'rgba(144,205,244,0.7)' },
-      { pi: 1, orbitR: 44, angle: Math.PI, speed: 0.010, r: 3, color: 'rgba(183,148,244,0.7)' },
-      { pi: 4, orbitR: 48, angle: 1.0,     speed: 0.008, r: 3, color: 'rgba(183,148,244,0.6)' },
+    // ── Satellites ────────────────────────────────────────────
+    // Each satellite orbits a planet (by index) or drifts freely
+    const satellites = [
+      // ISS-style orbiting Moon
+      { pi: 0, orbitR: 62, angle: 0,       speed: 0.012, r: 3,   color: 'rgba(200,220,255,0.8)', isSat: true },
+      // Small moon orbiting Mars
+      { pi: 1, orbitR: 50, angle: Math.PI, speed: 0.009, r: 3.5, color: 'rgba(220,140,100,0.7)', isSat: false },
+      // Moon orbiting Saturn
+      { pi: 2, orbitR: 55, angle: 1.0,     speed: 0.008, r: 3,   color: 'rgba(183,148,244,0.7)', isSat: false },
     ];
+
+    // ── Rocket ────────────────────────────────────────────────
+    // Drifts slowly upward in the right gutter, loops
+    const rocket = {
+      side: 'right',
+      x: 0, y: 0,        // set in draw
+      vy: -0.18,          // pixels per frame upward
+      baseY: 0,
+      initialized: false,
+      flameT: 0,
+    };
 
     // ── Shooting stars ────────────────────────────────────────
     const shooters = [];
     let shootTimer = 0;
     const spawnShooter = () => {
       const left = Math.random() < 0.5;
-      // spawn only in side gutters, never near the top navbar area
       const gutterW = Math.max(0, (W - 1100) / 2);
       shooters.push({
-        x: left
-          ? Math.random() * gutterW * 0.8
-          : W - Math.random() * gutterW * 0.8,
-        y: H * 0.15 + Math.random() * H * 0.7,  // between 15%–85% vertically
+        x: left ? Math.random() * gutterW * 0.8 : W - Math.random() * gutterW * 0.8,
+        y: H * 0.15 + Math.random() * H * 0.7,
         len: Math.random() * 100 + 50,
         speed: Math.random() * 6 + 3,
         angle: Math.PI / 5 + (Math.random() - 0.5) * 0.3,
@@ -118,7 +167,7 @@ const SpaceCanvas = () => {
 
       // body
       const bg = ctx.createRadialGradient(px - p.r * 0.3, py - p.r * 0.3, 0, px, py, p.r);
-      bg.addColorStop(0, lighten(p.color, 38)); bg.addColorStop(1, p.color);
+      bg.addColorStop(0, lighten(p.color, 40)); bg.addColorStop(1, p.color);
       ctx.beginPath(); ctx.arc(px, py, p.r, 0, Math.PI * 2);
       ctx.fillStyle = bg; ctx.fill();
 
@@ -129,16 +178,115 @@ const SpaceCanvas = () => {
         ctx.fillStyle = bc; ctx.fill();
       });
 
+      // craters (Moon)
+      if (p.craters) {
+        const craterData = [
+          { ox: -0.3, oy: -0.25, r: 0.22 },
+          { ox:  0.25, oy:  0.3,  r: 0.16 },
+          { ox: -0.1, oy:  0.4,  r: 0.12 },
+          { ox:  0.4, oy: -0.1,  r: 0.10 },
+        ];
+        craterData.forEach(c => {
+          ctx.beginPath();
+          ctx.arc(px + c.ox * p.r, py + c.oy * p.r, c.r * p.r, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(0,0,0,0.18)';
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        });
+      }
+
       // ring
       if (p.ring) {
         ctx.save(); ctx.translate(px, py); ctx.scale(1, 0.28);
-        ctx.beginPath(); ctx.arc(0, 0, p.r * 2.1, 0, Math.PI * 2);
+        ctx.beginPath(); ctx.arc(0, 0, p.r * 2.2, 0, Math.PI * 2);
         ctx.strokeStyle = p.ringColor; ctx.lineWidth = 5; ctx.stroke();
-        ctx.beginPath(); ctx.arc(0, 0, p.r * 1.65, 0, Math.PI * 2);
-        ctx.strokeStyle = p.ringColor.replace('0.3','0.12').replace('0.25','0.1');
+        ctx.beginPath(); ctx.arc(0, 0, p.r * 1.7, 0, Math.PI * 2);
+        ctx.strokeStyle = p.ringColor.replace('0.35','0.12');
         ctx.lineWidth = 3; ctx.stroke();
         ctx.restore();
       }
+    };
+
+    // Draw a tiny satellite (ISS-like cross shape)
+    const drawSatellite = (sx, sy, angle) => {
+      ctx.save();
+      ctx.translate(sx, sy);
+      ctx.rotate(angle);
+      // body
+      ctx.fillStyle = 'rgba(200,220,255,0.85)';
+      ctx.fillRect(-4, -2, 8, 4);
+      // solar panels
+      ctx.fillStyle = 'rgba(99,179,237,0.7)';
+      ctx.fillRect(-10, -1.5, 5, 3);
+      ctx.fillRect(5, -1.5, 5, 3);
+      // glow
+      const g = ctx.createRadialGradient(0, 0, 0, 0, 0, 8);
+      g.addColorStop(0, 'rgba(144,205,244,0.3)');
+      g.addColorStop(1, 'transparent');
+      ctx.beginPath(); ctx.arc(0, 0, 8, 0, Math.PI * 2);
+      ctx.fillStyle = g; ctx.fill();
+      ctx.restore();
+    };
+
+    // Draw rocket pointing upward with flame
+    const drawRocket = (rx, ry, flameT) => {
+      ctx.save();
+      ctx.translate(rx, ry);
+
+      // flame
+      const flicker = 0.7 + 0.3 * Math.sin(flameT * 18);
+      const fg = ctx.createRadialGradient(0, 18, 0, 0, 22, 14 * flicker);
+      fg.addColorStop(0, `rgba(255,220,80,${0.9 * flicker})`);
+      fg.addColorStop(0.4, `rgba(255,100,30,${0.7 * flicker})`);
+      fg.addColorStop(1, 'transparent');
+      ctx.beginPath(); ctx.arc(0, 22, 14 * flicker, 0, Math.PI * 2);
+      ctx.fillStyle = fg; ctx.fill();
+
+      // exhaust trail
+      for (let i = 0; i < 5; i++) {
+        const ty = 20 + i * 8;
+        const ta = (0.25 - i * 0.04) * flicker;
+        ctx.beginPath();
+        ctx.arc((Math.random() - 0.5) * 4, ty, 3 - i * 0.4, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,160,40,${ta})`;
+        ctx.fill();
+      }
+
+      // body
+      const bodyGrad = ctx.createLinearGradient(-7, -20, 7, -20);
+      bodyGrad.addColorStop(0, '#c8d8e8');
+      bodyGrad.addColorStop(0.5, '#e8f0f8');
+      bodyGrad.addColorStop(1, '#8090a0');
+      ctx.beginPath();
+      ctx.moveTo(-6, 14);
+      ctx.lineTo(-6, -10);
+      ctx.quadraticCurveTo(-6, -22, 0, -26);
+      ctx.quadraticCurveTo(6, -22, 6, -10);
+      ctx.lineTo(6, 14);
+      ctx.closePath();
+      ctx.fillStyle = bodyGrad;
+      ctx.fill();
+
+      // window
+      const wg = ctx.createRadialGradient(-1, -8, 0, -1, -8, 4);
+      wg.addColorStop(0, 'rgba(144,205,244,0.9)');
+      wg.addColorStop(1, 'rgba(30,80,140,0.8)');
+      ctx.beginPath(); ctx.arc(0, -8, 4, 0, Math.PI * 2);
+      ctx.fillStyle = wg; ctx.fill();
+      ctx.strokeStyle = 'rgba(200,230,255,0.5)'; ctx.lineWidth = 0.8; ctx.stroke();
+
+      // fins
+      ctx.fillStyle = '#63b3ed';
+      ctx.beginPath(); ctx.moveTo(-6, 14); ctx.lineTo(-13, 20); ctx.lineTo(-6, 6); ctx.closePath(); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(6, 14);  ctx.lineTo(13, 20);  ctx.lineTo(6, 6);  ctx.closePath(); ctx.fill();
+
+      // stripe
+      ctx.fillStyle = 'rgba(99,179,237,0.6)';
+      ctx.fillRect(-6, -2, 12, 3);
+
+      ctx.restore();
     };
 
     // ── Main loop ─────────────────────────────────────────────
@@ -146,7 +294,6 @@ const SpaceCanvas = () => {
     const draw = () => {
       t += 0.016;
 
-      // smooth scroll & mouse
       scrollY += (targetScrollY - scrollY) * 0.06;
       camX += (((mouseX / (W||1)) - 0.5) * 50 - camX) * 0.04;
       camY += (((mouseY / (H||1)) - 0.5) * 25 - camY) * 0.04;
@@ -155,14 +302,12 @@ const SpaceCanvas = () => {
 
       const CONTENT_W = 1100;
       const gutter = Math.max(0, (W - CONTENT_W) / 2);
-      // center of each gutter
       const leftCX  = gutter / 2;
       const rightCX = W - gutter / 2;
 
-      // ── nebulae ──
+      // nebulae
       nebulae.forEach(n => {
         const nx = n.side === 'left' ? leftCX : rightCX;
-        // scroll so nebulae drift slowly as you scroll — very subtle
         const ny = n.ny * H * 6 - scrollY * 0.04 + camY * 0.03;
         const grd = ctx.createRadialGradient(nx, ny, 0, nx, ny, n.r);
         grd.addColorStop(0, n.c1); grd.addColorStop(1, n.c2);
@@ -170,7 +315,7 @@ const SpaceCanvas = () => {
         ctx.fillStyle = grd; ctx.fill();
       });
 
-      // ── stars ──
+      // stars
       stars.forEach(s => {
         const pf = PARALLAX[s.layer];
         const sx = ((s.x % W + W) % W) + camX * pf;
@@ -180,7 +325,7 @@ const SpaceCanvas = () => {
         ctx.fillStyle = `rgba(255,255,255,${s.alpha})`; ctx.fill();
       });
 
-      // ── dust ──
+      // dust
       dust.forEach(d => {
         d.x += d.vx / W * 60; d.y += d.vy / H * 60;
         if (d.x < 0) d.x = 1; if (d.x > 1) d.x = 0;
@@ -189,23 +334,19 @@ const SpaceCanvas = () => {
         ctx.fillStyle = `rgba(144,205,244,${d.alpha})`; ctx.fill();
       });
 
-      // ── planets — fixed viewport Y, centered in gutter ──
+      // planets
       planets.forEach(p => {
-        // X: center of gutter + horizontal float + mouse drift
         const baseX = p.side === 'left' ? leftCX : rightCX;
         const floatX = Math.cos(t * p.floatSpeed * 0.7 + p.floatOffset) * (p.floatAmp * 0.5);
         const px = baseX + floatX + camX * 0.12;
-
-        // Y: fixed fraction of viewport + vertical float
         const floatY = Math.sin(t * p.floatSpeed + p.floatOffset) * p.floatAmp;
         const py = p.sy * H + floatY;
-
         p._sx = px; p._sy = py;
         drawPlanet(px, py, p);
       });
 
-      // ── moons ──
-      moons.forEach(m => {
+      // satellites / moons
+      satellites.forEach(m => {
         const p = planets[m.pi];
         if (!p._sx) return;
         m.angle += m.speed;
@@ -218,11 +359,33 @@ const SpaceCanvas = () => {
         ctx.strokeStyle = 'rgba(255,255,255,0.05)'; ctx.lineWidth = 1; ctx.stroke();
         ctx.restore();
 
-        ctx.beginPath(); ctx.arc(mx, my, m.r, 0, Math.PI * 2);
-        ctx.fillStyle = m.color; ctx.fill();
+        if (m.isSat) {
+          drawSatellite(mx, my, m.angle + Math.PI / 2);
+        } else {
+          ctx.beginPath(); ctx.arc(mx, my, m.r, 0, Math.PI * 2);
+          ctx.fillStyle = m.color; ctx.fill();
+        }
       });
 
-      // ── shooting stars ──
+      // rocket — drifts upward in right gutter, loops back from bottom
+      if (gutter > 40) {
+        if (!rocket.initialized) {
+          rocket.x = rightCX + (Math.random() - 0.5) * gutter * 0.3;
+          rocket.y = H * 0.85;
+          rocket.initialized = true;
+        }
+        rocket.y += rocket.vy;
+        rocket.flameT += 0.016;
+        // slight horizontal sway
+        const sway = Math.sin(t * 0.4) * 4;
+        if (rocket.y < -60) {
+          rocket.y = H + 60;
+          rocket.x = rightCX + (Math.random() - 0.5) * gutter * 0.3;
+        }
+        drawRocket(rocket.x + sway + camX * 0.08, rocket.y, rocket.flameT);
+      }
+
+      // shooting stars
       shootTimer += 0.016;
       if (shootTimer > 3.5 + Math.random() * 4) { spawnShooter(); shootTimer = 0; }
       for (let i = shooters.length - 1; i >= 0; i--) {

@@ -81,20 +81,20 @@ const SideDecorations = () => (
     <div className="side-panel side-left">
       <ConstellationCanvas dots={LEFT_CONSTELLATION} lines={LEFT_LINES} side="left" />
       <div className="side-coords side-coords-left">
-        <span>RA 05h 34m</span>
-        <span>Dec +22°</span>
+        <span>LUNA · 384,400 km</span>
+        <span>MARS · 78.3M km</span>
       </div>
-      <div className="side-label-vert side-label-left">DEEP SPACE</div>
+      <div className="side-label-vert side-label-left">MISSION CONTROL</div>
     </div>
 
     {/* Right panel */}
     <div className="side-panel side-right">
       <ConstellationCanvas dots={RIGHT_CONSTELLATION} lines={RIGHT_LINES} side="right" />
       <div className="side-coords side-coords-right">
-        <span>RA 17h 45m</span>
-        <span>Dec −29°</span>
+        <span>ISS · 408 km ALT</span>
+        <span>VEL · 7.66 km/s</span>
       </div>
-      <div className="side-label-vert side-label-right">MILKY WAY</div>
+      <div className="side-label-vert side-label-right">DEEP SPACE</div>
     </div>
   </>
 );

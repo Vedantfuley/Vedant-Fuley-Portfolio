@@ -85,7 +85,7 @@ export const fallbackSocials = [
     icon: '📍',
     name: 'Location',
     handle: 'Raipur, C.G., India',
-    url: '#',
+    url: 'https://www.google.com/maps/search/Raipur,+Chhattisgarh,+India',
   },
 ];
 
